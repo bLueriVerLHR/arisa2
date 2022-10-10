@@ -4,8 +4,6 @@
 
 `Arisa2` 是一个基于 Drogon 和 curlpp 的 qq 机器人。其基础内容完全面向 go-cqhttp 的 http 模式。
 
-## 简介
-
 ## 插件开发
 
 目前插件开发非常的简陋。
