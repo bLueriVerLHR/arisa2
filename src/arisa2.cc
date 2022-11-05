@@ -1,5 +1,10 @@
-#include "Arisa2.h"
+#include <drogon/HttpRequest.h>
+#include <json/json.h>
+
+#include "arisa2.h"
 #include "plugin.h"
+#include "selfdef.h"
+#include "requests.h"
 
 #define ADD_PLUGIN(name) plugins.push_back(std::make_unique<name>())
 
@@ -29,11 +34,14 @@ void arisa::qqbot::handleMessage(const std::shared_ptr<Json::Value> &json) {
     for (auto &&func: plugins) {
         if (func && func->match(raw_message)) {
             auto &&msg = func->act(json);
-            requests::parameters pms;
-            pms.params["group_id"] = (*json)["group_id"].asString();
-            pms.params["message"] = msg;
-            qy.set_app("send_group_msg");
-            qy.send(pms);
+            std::cout << msg;
+            Json::Value req_json;
+            req_json["group_id"] = (*json)["group_id"].asString();
+            req_json["message"] = msg;
+            // std::cout << req_json.toStyledString() << std::endl;
+            std::string req_addr(BOT_STRING);
+            req_addr += "/send_group_msg";
+            requests::post(req_addr.c_str(), req_json);
             break;
         }
     }
@@ -54,21 +62,23 @@ void arisa::qqbot::handleNotice(const std::shared_ptr<Json::Value> &json) {
 }
 
 void arisa::qqbot::handleGroupRecall(const std::shared_ptr<Json::Value> &json) {
-    static std::vector<std::string> answers
+    static const char *answers[]
     {
         "啊咧咧，刚刚说了什么鸭？",
         "Typo了吗？",
         "别撤回鸭，多见外",
         "嘿嘿，害羞了吧？",
     };
+    static const auto answer_sz = sizeof(answers) / sizeof(answers[0]);
     if (rand() % 3)
         return;
-    requests::parameters pms;
-    pms.params["group_id"] = (*json)["group_id"].asString();
-    pms.params["message"] = answers[rand() % answers.size()];
-    qy.set_app("send_group_msg");
-    qy.send(pms);
-    pms.params.clear();
+
+    Json::Value req_json;
+    req_json["group_id"] = (*json)["group_id"].asString();
+    req_json["message"] = answers[rand() % answer_sz];
+    std::string req_addr(BOT_STRING);
+    req_addr += "/send_group_msg";
+    requests::post(req_addr.c_str(), req_json);
 }
 
 void arisa::qqbot::handleNotify(const std::shared_ptr<Json::Value> &json) {
@@ -90,12 +100,12 @@ void arisa::qqbot::handlePoke(const std::shared_ptr<Json::Value> &json) {
     if (self_id == sender_id || self_id != target_id)
         return;
 
-    requests::parameters pms;
-    pms.params["group_id"] = (*json)["group_id"].asString();
-    pms.params["message"] = "[CQ:poke,qq=" + (*json)["sender_id"].asString() + "]";
-    qy.set_app("send_group_msg");
-    qy.send(pms);
-    pms.params.clear();
+    Json::Value req_json;
+    req_json["group_id"] = (*json)["group_id"].asString();
+    req_json["message"] = "[CQ:poke,qq=" + (*json)["sender_id"].asString() + "]";
+    std::string req_addr(BOT_STRING);
+    req_addr += "/send_group_msg";
+    requests::post(req_addr.c_str(), req_json);
 }
 
 void arisa::qqbot::handleLuckyKing(const std::shared_ptr<Json::Value> &json) {

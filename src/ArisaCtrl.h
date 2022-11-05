@@ -2,7 +2,7 @@
 
 #include <drogon/HttpSimpleController.h>
 
-#include "Arisa2.h"
+#include "arisa2.h"
 
 using namespace drogon;
 

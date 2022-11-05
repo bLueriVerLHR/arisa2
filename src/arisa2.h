@@ -1,8 +1,8 @@
 #pragma once
 
-#include <drogon/HttpSimpleController.h>
+#include <list>
 
-#include "Requests.h"
+#include <drogon/HttpSimpleController.h>
 
 namespace arisa
 {
@@ -25,8 +25,6 @@ class qqbot
             void handleLuckyKing(const std::shared_ptr<Json::Value> &json);
 
     void handleMeta(const std::shared_ptr<Json::Value> &json);
-
-    requests::query qy;
 
     std::list<std::unique_ptr<regex_function>> plugins;
 

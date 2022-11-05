@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Arisa2.h"
+#include "arisa2.h"
 
 namespace arisa
 {

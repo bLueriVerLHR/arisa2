@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
+
 project(arisa2 CXX)
 
 include(CheckIncludeFileCXX)
@@ -6,6 +7,7 @@ include(CheckIncludeFileCXX)
 check_include_file_cxx(any HAS_ANY)
 check_include_file_cxx(string_view HAS_STRING_VIEW)
 check_include_file_cxx(coroutine HAS_COROUTINE)
+
 if (HAS_ANY AND HAS_STRING_VIEW AND HAS_COROUTINE)
     set(CMAKE_CXX_STANDARD 20)
 elseif (HAS_ANY AND HAS_STRING_VIEW)
@@ -15,12 +17,15 @@ else ()
 endif ()
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+# set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_executable(${PROJECT_NAME} main.cc)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src SRCS)
+
+add_executable(${PROJECT_NAME} ${SRCS})
 
 find_package(Drogon CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon curlpp curl)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon curl ssl3)
 
 if (CMAKE_CXX_STANDARD LESS 17)
     message(STATUS "use c++14")

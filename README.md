@@ -2,7 +2,7 @@
 
 ## 简介
 
-`Arisa2` 是一个基于 Drogon 和 curlpp 的 qq 机器人。其基础内容完全面向 go-cqhttp 的 http 模式。
+`Arisa2` 是一个基于 Drogon 和 curl 的 qq 机器人。其基础内容完全面向 go-cqhttp 的 http 模式。
 
 ## 插件开发
 
@@ -61,4 +61,4 @@ arisa::qqbot::qqbot() {
 
 目前端口设置都是以硬编码形式设置。
 
-该 `qqbot` 端口在 `main.cc` 内设置。`curlpp` 端口在 `Requests.h` 中，结构体 `query` 的初始化部分设置。
+在 selfdef.h 中。

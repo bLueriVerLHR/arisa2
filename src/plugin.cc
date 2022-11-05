@@ -4,14 +4,16 @@
 #include <cstdio>
 #include <string>
 
+#include "ctre/ctre.hpp"
+
 #include "plugin.h"
 
 namespace arisa
 {
 
 bool Echo::match(Json::String &input) {
-    const std::regex rgx("^/echo .*", std::regex_constants::ECMAScript);
-    return std::regex_match(input, rgx);
+    static constexpr auto pattern = ctll::fixed_string{ "^/echo .*" };
+    return !!ctre::match<pattern>(input);
 }
 
 Json::String Echo::act(const std::shared_ptr<Json::Value> &json) {
