@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <cstdio>
+#include <string>
 
 constexpr char HOST_ADDR[4] = {127, 0, 0, 1};
 constexpr short HOST_PORT = 5710;
