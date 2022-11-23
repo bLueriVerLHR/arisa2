@@ -1,3 +1,4 @@
+#include <condition_variable>
 #include <mutex>
 
 #include <drogon/HttpRequest.h>
@@ -13,6 +14,9 @@
 arisa::qqbot::qqbot() {
   ADD_PLUGIN(Echo);
   ADD_PLUGIN(DailyWord);
+  ADD_PLUGIN(bgmCalendar);
+  ADD_PLUGIN(Covid);
+  ADD_PLUGIN(Help);
 }
 
 void arisa::qqbot::handle(const std::shared_ptr<Json::Value> &json) {
@@ -54,6 +58,7 @@ void arisa::qqbot::handleRequest(const std::shared_ptr<Json::Value> &json) {}
 void arisa::qqbot::handleNotice(const std::shared_ptr<Json::Value> &json) {
   auto notice_type = (*json)["notice_type"].asString();
   printf(" notice_type: %s\n", notice_type.c_str());
+
   if (notice_type == "group_recall") {
     handleGroupRecall(json);
   } else if (notice_type == "notify") {
@@ -115,9 +120,15 @@ void arisa::qqbot::handleMeta(const std::shared_ptr<Json::Value> &json) {}
 
 static std::mutex tskmtx;
 
+static std::condition_variable cv;
+static std::mutex cvmtx;
+static bool ready = false;
+
 void arisa::qqbot::push(const std::shared_ptr<Json::Value> &json) {
+  std::unique_lock<std::mutex> cvlck{cvmtx};
   std::unique_lock<std::mutex> lck{tskmtx};
   tasks.push_back(std::make_shared<Json::Value>(*json));
+  cv.notify_all();
 }
 
 void arisa::qqbot::dojob() {
@@ -132,7 +143,9 @@ static std::mutex endmtx;
 
 void arisa::qqbot::setend() {
   std::unique_lock<std::mutex> lck{endmtx};
+  std::unique_lock<std::mutex> cvlck{cvmtx};
   end = true;
+  cv.notify_all();
 }
 
 bool arisa::qqbot::isend() {
@@ -142,6 +155,8 @@ bool arisa::qqbot::isend() {
 
 void arisa::qqloop::operator()() {
   while (!bot->isend()) {
+    std::unique_lock<std::mutex> lck{cvmtx};
+    cv.wait(lck);
     bot->dojob();
   }
 }

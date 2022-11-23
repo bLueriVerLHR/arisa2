@@ -10,10 +10,10 @@
 #include "requests.h"
 
 namespace {
-  bool startwith(const char *src, const char *tgt) {
-    return !strncmp(src, tgt, strlen(tgt));
-  }
+bool startwith(const char *src, const char *tgt) {
+  return !strncmp(src, tgt, strlen(tgt));
 }
+} // namespace
 
 namespace arisa {
 
@@ -22,18 +22,24 @@ bool Echo::match(Json::String &input) {
   return !!ctre::match<pattern>(input);
 }
 
-Json::String Echo::act(const std::shared_ptr<Json::Value> &json) {
-  return (*json)["raw_message"].asString().substr(6);
-}
-
 bool DailyWord::match(Json::String &input) {
   static constexpr auto pattern = ctll::fixed_string{"^/dw$"};
   return !!ctre::match<pattern>(input);
 }
 
-Json::String DailyWord::act(const std::shared_ptr<Json::Value> &json) {
-  auto &&result = requests::get("https://v.api.aa1.cn/api/api-wenan-mingrenmingyan/index.php?aa1=json");
-  return result[0]["mingrenmingyan"].asString();
+bool arisa::bgmCalendar::match(Json::String &input) {
+  static constexpr auto pattern = ctll::fixed_string{"^/bgmc$"};
+  return !!ctre::match<pattern>(input);
+}
+
+bool arisa::Covid::match(Json::String &input) {
+  static constexpr auto pattern = ctll::fixed_string{"^/cov$"};
+  return !!ctre::match<pattern>(input);
+}
+
+bool arisa::Help::match(Json::String &input) {
+  static constexpr auto pattern = ctll::fixed_string{"^/help$"};
+  return !!ctre::match<pattern>(input);
 }
 
 } // namespace arisa

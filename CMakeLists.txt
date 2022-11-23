@@ -20,8 +20,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set(CMAKE_CXX_EXTENSIONS OFF)
 
 aux_source_directory(${CMAKE_SOURCE_DIR}/src SRCS)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src/plugins PLUGINSSRC)
 
-add_executable(${PROJECT_NAME} ${SRCS})
+add_executable(${PROJECT_NAME} ${SRCS} ${PLUGINSSRC})
 
 find_package(Drogon CONFIG REQUIRED)
 
