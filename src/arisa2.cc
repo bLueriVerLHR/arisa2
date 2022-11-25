@@ -134,7 +134,9 @@ void arisa::qqbot::push(const std::shared_ptr<Json::Value> &json) {
 void arisa::qqbot::dojob() {
   std::unique_lock<std::mutex> lck{tskmtx};
   if (!tasks.empty()) {
+    lck.unlock();
     handle(tasks.front());
+    lck.lock();
     tasks.pop_front();
   }
 }
